@@ -1,7 +1,7 @@
 import groovy.json.JsonBuilder
 
 node {
-  withEnv(['REPOSITORY=c1-apache-struts2']) {
+  withEnv(['REPOSITORY=c1-log4j-shell-poc']) {
     stage('Pull Image from Git') {
       script {
         git (url: "${scm.userRemoteConfigs[0].url}", credentialsId: "github-auth")
