@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  name: c1-log4j-shell-poc
+  labels:
+    app: c1-log4j-shell-poc
+spec:
+  type: LoadBalancer
+  ports:
+  - protocol: TCP
+    port: 80
+    name: c1-log4j-shell-poc
+    targetPort: 8080
+  selector:
+    app: c1-log4j-shell-poc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: c1-log4j-shell-poc
+  name: c1-log4j-shell-poc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: c1-log4j-shell-poc
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: c1-log4j-shell-poc
+    spec:
+      containers:
+      - name: c1-log4j-shell-poc
+        image: $K8S_REGISTRY/c1-log4j-shell-poc:latest
+        imagePullPolicy: Always
+        env:
+        - name: TREND_AP_KEY
+          value: $STRUTS_KEY
+        - name: TREND_AP_SECRET
+          value: $STRUTS_SECRET
+        ports:
+        - containerPort: 8080
